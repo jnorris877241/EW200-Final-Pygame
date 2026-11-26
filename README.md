@@ -14,3 +14,4 @@ To be counted for points:
 - fancy font- used an online font (+1)
 - the walls are hard- gun cannot leave the screen (+4)
 - muzak- play continuous background music (+2)
+- looking weak- ducks change to gray and fall when shot (+4)
