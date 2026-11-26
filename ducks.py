@@ -8,7 +8,7 @@ class Ducks(pygame.sprite.Sprite):
         self.image = pygame.image.load('duck_outline_target_brown.png')
         self.image = pygame.transform.scale_by(self.image, 0.8)
         self.x = randint(100, 10*TS)
-        self.y = randint(2*TS, 6*TS)
+        self.y = randint((1*TS), 6*TS)
         self.vx = vx
         self.vy = vy
         self.rect = self.image.get_rect(center = (self.x, self.y))
@@ -22,10 +22,4 @@ class Ducks(pygame.sprite.Sprite):
             self.vy = -self.vy
         self.rect.center = (self.x, self.y)
         surface.blit(self.image,self.rect)
-        
-    #def check_bullet(self, ammo):
-        #collided_ducks = pygame.sprite.spritecollide(self, ammo, True)
-        #if collided_ducks:
-            #self.kill()
-    
         

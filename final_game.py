@@ -12,7 +12,6 @@ TS = 80
 WIDTH = TS * 11
 HEIGHT = TS * 9
 SIZE = (WIDTH, HEIGHT)
-speed = 0.5
 
 #colors
 icy_blue = (189,224,254)
@@ -73,7 +72,7 @@ pygame.mixer.init()
 quack = pygame.mixer.Sound('quack.mp3')
 quack.set_volume(1)
 theme_music = pygame.mixer.Sound('duck_background.mp3')
-theme_music.set_volume(0.2)
+theme_music.set_volume(0.6)
 lose = pygame.mixer.Sound('lose.mp3')
 lose.set_volume(0.8)
 
@@ -87,6 +86,12 @@ gun = Gun(ammo)
 ducks1 = pygame.sprite.Group()
 ducks2 = pygame.sprite.Group()
 ducks3 = pygame.sprite.Group()
+#load dead duck images
+dead_duck = r"duck_outline_back.png"
+dead_duck_img = pygame.image.load(dead_duck)
+dead_duck_img = pygame.transform.scale_by(dead_duck_img, 0.8)
+#dead ducks list to append to to blit the ducks
+dead_ducks = []
 #add 5 ducks
 for i in range(6):
     ducks1.add(Ducks(TS, 0.75, 0.75))
@@ -104,9 +109,10 @@ leave = 1
 running = 1
 while leave:
     clock.tick(60)
+    #play theme music repeating
+    theme_music.play(-1)
     while running:
         screen.blit(bg_main, (0,0))
-        theme_music.play()
         #blit the title to the screen
         screen.blit(title_surface,title_rect)
         screen.blit(subtitle_surface,subtitle_rect)
@@ -132,8 +138,6 @@ while leave:
             screen.fill(hunter_green)
             screen.blit(level_one, level1_rect)
             pygame.display.flip()
-        #stop music
-        theme_music.stop()
         while pygame.time.get_ticks() - game_clock1 <= 63000 and running==1:
             clock.tick(60)
             screen.blit(bg, (0,0))
@@ -148,6 +152,12 @@ while leave:
             hit = pygame.sprite.groupcollide(ducks1, ammo, True, True)
             if hit:
                 quack.play()
+                for duck in hit:
+                    #append the dead ducks position to the empty list
+                    dead_ducks.append(duck.rect.copy())
+            for position in dead_ducks:
+                screen.blit(dead_duck_img, position)
+                position.y += 5
             ducks1.update(screen)
             ammo.update(screen_rect)
             ammo.draw(screen)
@@ -160,6 +170,7 @@ while leave:
             screen.blit(time_surface, (int(TS*8.75), 30))
             if time <= 0.0:
                 running = 0
+                theme_music.stop()
                 lose.play()
                 game_over = True
                 while game_over:
@@ -180,15 +191,14 @@ while leave:
         break
     #level two
     running = 1
+    #make sure dead ducks list is empty from level 1
+    dead_ducks.clear()
     time2 = 45
     while running:
         while pygame.time.get_ticks() - start2 <= 3000:
-            theme_music.play()
             screen.fill(hunter_green)
             screen.blit(level_two, level2_rect)
             pygame.display.flip()
-        #stop music
-        theme_music.stop()
         while pygame.time.get_ticks() - game_clock2 <= 48000 and running==1:
             clock.tick(60)
             screen.blit(bg, (0,0))
@@ -203,6 +213,12 @@ while leave:
             hit = pygame.sprite.groupcollide(ducks2, ammo, True, True)
             if hit:
                 quack.play()
+                for duck in hit:
+                    #append the dead ducks position to the empty list
+                    dead_ducks.append(duck.rect.copy())
+            for position in dead_ducks:
+                screen.blit(dead_duck_img, position)
+                position.y += 5
             ducks2.update(screen)
             ammo.update(screen_rect)
             ammo.draw(screen)
@@ -215,6 +231,7 @@ while leave:
             screen.blit(time2_surface, (int(TS*8.75), 30))
             if time2 <= 0.0:
                 running = 0
+                theme_music.stop()
                 lose.play()
                 game_over = True
                 while game_over:
@@ -234,17 +251,16 @@ while leave:
     if leave == 0:
         break
     #level three
+    #make sure dead ducks list is empty from level 2
+    dead_ducks.clear()
     running = 1
     time3 = 30
     while running:
         clock.tick(60)
         while pygame.time.get_ticks() - start3 <= 3000:
-            theme_music.play()
             screen.fill(hunter_green)
             screen.blit(level_three, level3_rect)
             pygame.display.flip()
-        #stop music
-        theme_music.stop()
         while pygame.time.get_ticks() - game_clock3 <= 33000 and running==1:
             clock.tick(60)
             screen.blit(bg, (0,0))
@@ -259,6 +275,12 @@ while leave:
             hit = pygame.sprite.groupcollide(ducks3, ammo, True, True)
             if hit:
                 quack.play()
+                for duck in hit:
+                    #append the dead ducks position to the empty list
+                    dead_ducks.append(duck.rect.copy())
+            for position in dead_ducks:
+                screen.blit(dead_duck_img, position)
+                position.y += 5
             ducks3.update(screen)
             ammo.update(screen_rect)
             ammo.draw(screen)
@@ -271,6 +293,7 @@ while leave:
             screen.blit(time3_surface, (int(TS*8.75), 30))
             if time3 <= 0.0:
                 running = 0
+                theme_music.stop()
                 lose.play()
                 game_over = True
                 while game_over:
@@ -290,7 +313,6 @@ while leave:
     running = 1
     while running:
         screen.blit(bg_main, (0,0))
-        theme_music.play()
         screen.blit(end_surface, end_rect)
         screen.blit(end_subtitle_surface, end_subtitle_rect)
         pygame.display.flip()
