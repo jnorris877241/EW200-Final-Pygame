@@ -17,7 +17,7 @@ speed = 0.5
 #colors
 icy_blue = (189,224,254)
 orange = (255, 174, 3)
-baltic_blue = (65, 101, 138)
+baltic_blue = (0,53,107)
 hunter_green = (51, 103, 59)
 pale_sky = (206, 229, 242)
 dark_blue = (11, 0, 51)
@@ -39,12 +39,12 @@ for x in range(0, WIDTH):
 font = pygame.font.Font('Cinzel-ExtraBold.ttf', size = 120)
 font2 = pygame.font.Font('Cinzel-ExtraBold.ttf', size = 40)
 #make the main screen text
-title_surface = font.render('Duck Hunt!',1,baltic_blue)
+title_surface = font.render('Duck Hunt!',1, baltic_blue)
 title_rect = title_surface.get_rect()
-title_rect.center = (WIDTH/2, HEIGHT/2-80)
+title_rect.center = (WIDTH/2, HEIGHT/2-70)
 subtitle_surface = font2.render('press SPACEBAR to play', 1, hunter_green)
 subtitle_rect = subtitle_surface.get_rect()
-subtitle_rect.center = (WIDTH/2, HEIGHT/2+10)
+subtitle_rect.center = (WIDTH/2, HEIGHT/2+30)
 #level one text
 level_one = font.render('LEVEL ONE', 1, icy_blue)
 level1_rect = level_one.get_rect()
@@ -58,18 +58,24 @@ level_three = font.render('LEVEL THREE', 1, icy_blue)
 level3_rect = level_three.get_rect()
 level3_rect.center = (WIDTH/2, HEIGHT/2)
 #make end screen text 
-end_surface = font.render('GAME OVER!', 1, orange)
+end_surface = font.render('YOU WON!', 1, orange)
 end_rect = end_surface.get_rect()
 end_rect.center = (WIDTH/2, HEIGHT/2-30)
 end_subtitle_surface = font2.render('press SPACEBAR to end', 1, hunter_green)
 end_subtitle_rect = end_subtitle_surface.get_rect()
 end_subtitle_rect.center = (WIDTH/2, HEIGHT/2+40)
+#you lost text
+lost_surface = font.render('YOU LOST!', 1, orange)
+lost_rect = lost_surface.get_rect()
+lost_rect.center = (WIDTH/2, HEIGHT/2-30)
 #load sound
 pygame.mixer.init()
 quack = pygame.mixer.Sound('quack.mp3')
 quack.set_volume(1)
 theme_music = pygame.mixer.Sound('duck_background.mp3')
 theme_music.set_volume(0.2)
+lose = pygame.mixer.Sound('lose.mp3')
+lose.set_volume(0.8)
 
 #main game background
 bg = make_bg(SIZE, TS)
@@ -110,6 +116,7 @@ while leave:
             if e.type == pygame.QUIT:
                 running = 0
                 leave = 0
+                break
             if e.type == pygame.KEYDOWN:
                 running = 0
     #MAIN GAME LOOP
@@ -127,7 +134,7 @@ while leave:
             pygame.display.flip()
         #stop music
         theme_music.stop()
-        while pygame.time.get_ticks() - game_clock1 <= 60000:
+        while pygame.time.get_ticks() - game_clock1 <= 63000 and running==1:
             clock.tick(60)
             screen.blit(bg, (0,0))
             events = pygame.event.get()
@@ -135,6 +142,7 @@ while leave:
                 if e.type == pygame.QUIT:
                         running = 0
                         leave = 0
+                        break
                 gun.update(e)
             #kill both duck and ammo when collide
             hit = pygame.sprite.groupcollide(ducks1, ammo, True, True)
@@ -150,6 +158,21 @@ while leave:
             time -= 1/60
             time_surface = font.render(f"{time:0.0f}", 1, (hunter_green))
             screen.blit(time_surface, (int(TS*8.75), 30))
+            if time <= 0.0:
+                running = 0
+                lose.play()
+                game_over = True
+                while game_over:
+                    screen.fill(dark_blue)
+                    screen.blit(lost_surface, lost_rect)
+                    screen.blit(end_subtitle_surface, end_subtitle_rect)
+                    pygame.display.flip()
+                    for e in pygame.event.get():
+                        if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE):
+                            running = 0
+                            leave = 0
+                            game_over = False
+                            break
             pygame.display.flip()
     start2 = pygame.time.get_ticks()
     game_clock2 = pygame.time.get_ticks()
@@ -166,7 +189,7 @@ while leave:
             pygame.display.flip()
         #stop music
         theme_music.stop()
-        while pygame.time.get_ticks() - game_clock2 <= 45000:
+        while pygame.time.get_ticks() - game_clock2 <= 48000 and running==1:
             clock.tick(60)
             screen.blit(bg, (0,0))
             events = pygame.event.get()
@@ -174,6 +197,7 @@ while leave:
                 if e.type == pygame.QUIT:
                     running = 0
                     leave = 0
+                    break
                 gun.update(e)
             #kill both duck and ammo when collide
             hit = pygame.sprite.groupcollide(ducks2, ammo, True, True)
@@ -189,14 +213,31 @@ while leave:
             time2 -= 1/60
             time2_surface = font.render(f"{time2:0.0f}", 1, (hunter_green))
             screen.blit(time2_surface, (int(TS*8.75), 30))
+            if time2 <= 0.0:
+                running = 0
+                lose.play()
+                game_over = True
+                while game_over:
+                    screen.fill(dark_blue)
+                    screen.blit(lost_surface, lost_rect)
+                    screen.blit(end_subtitle_surface, end_subtitle_rect)
+                    pygame.display.flip()
+                    for e in pygame.event.get():
+                        if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE):
+                            running = 0
+                            leave = 0
+                            game_over = False
+                            break
             pygame.display.flip()
     start3 = pygame.time.get_ticks()
+    game_clock3 = pygame.time.get_ticks()
     if leave == 0:
         break
     #level three
     running = 1
     time3 = 30
     while running:
+        clock.tick(60)
         while pygame.time.get_ticks() - start3 <= 3000:
             theme_music.play()
             screen.fill(hunter_green)
@@ -204,27 +245,46 @@ while leave:
             pygame.display.flip()
         #stop music
         theme_music.stop()
-        screen.blit(bg, (0,0))
-        events = pygame.event.get()
-        for e in events:
-            if e.type == pygame.QUIT:
+        while pygame.time.get_ticks() - game_clock3 <= 33000 and running==1:
+            clock.tick(60)
+            screen.blit(bg, (0,0))
+            events = pygame.event.get()
+            for e in events:
+                if e.type == pygame.QUIT:
+                    running = 0
+                    leave = 0
+                    break
+                gun.update(e)
+            #kill both duck and ammo when collide
+            hit = pygame.sprite.groupcollide(ducks3, ammo, True, True)
+            if hit:
+                quack.play()
+            ducks3.update(screen)
+            ammo.update(screen_rect)
+            ammo.draw(screen)
+            gun.draw(screen)
+            if len(ducks3) == 0:
+               running = 0
+               game_clock3 -= 30000
+            time3 -= 1/60
+            time3_surface = font.render(f"{time3:0.0f}", 1, (hunter_green))
+            screen.blit(time3_surface, (int(TS*8.75), 30))
+            if time3 <= 0.0:
                 running = 0
-                leave = 0
-            gun.update(e)
-        #kill both duck and ammo when collide
-        hit = pygame.sprite.groupcollide(ducks3, ammo, True, True)
-        if hit:
-            quack.play()
-        ducks3.update(screen)
-        ammo.update(screen_rect)
-        ammo.draw(screen)
-        gun.draw(screen)
-        if len(ducks3) == 0:
-           running = 0
-        time3 -= 1/60
-        time3_surface = font.render(f"{time3:0.0f}", 1, (hunter_green))
-        screen.blit(time3_surface, (int(TS*8.75), 30))
-        pygame.display.flip()
+                lose.play()
+                game_over = True
+                while game_over:
+                    screen.fill(dark_blue)
+                    screen.blit(lost_surface, lost_rect)
+                    screen.blit(end_subtitle_surface, end_subtitle_rect)
+                    pygame.display.flip()
+                    for e in pygame.event.get():
+                        if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE):
+                            running = 0
+                            leave = 0
+                            game_over = False
+                            break
+            pygame.display.flip()
     if leave == 0:
         break
     running = 1
