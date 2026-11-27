@@ -2,7 +2,7 @@
 # My final duck hunting game!
 Come hunt for ducks in a multi-level, dynamic, exhilarating game! Immerse yourself in the sounds of hunting and see if you can beat the clock with good aim. Use your arrows to move the gun and the mousepad to shoot. Good luck!
 
-(duck_game.png)
+''duck_game.png''
 
 # To be counted for points:
 - mouse master- press mouse to shoot (+2)
